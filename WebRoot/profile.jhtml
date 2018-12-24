@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 密码修改 </title>
+		<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+		<script type="text/javascript" src="jquery/afquery.js" ></script>
+		<link rel="stylesheet" href="jquery/afquery.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		
+		
+		<style>
+			body{
+				margin: 0px;
+				background-color: #F7F8FA;
+			}
+			
+			
+			/* 中间内容区 */
+			#content{
+				margin:80px 10px auto 200px;
+				min-height: 700px;
+				background-color: #fff;
+				
+				padding: 20px;
+			}
+			/* 工具栏 */
+			#content .toolbar{
+				padding: 8px ;
+			}			
+			#content .toolbar button:hover{
+				
+			}
+			/*密码输入区*/
+			#content .tool{
+			
+				
+				
+				margin-top: 50px;
+				
+			}
+			#content .item{
+				padding: 6px;
+			}
+			input
+			{
+				width: 400px;
+				height: 30px;
+			}
+		</style>
+			
+	
+		
+	
+		
+	</head>
+	<body>
+
+		<#include '/index_top.html' />
+		<#include '/index_left.html' />
+		<!--内容区-->
+		<div id="content">
+			<div class="tool">
+				<div class="item">
+					<input type="text" name="username" placeholder="请输入用户名"  >
+				</div>
+				<div class="item">
+					<input type="password" name="old_password" placeholder="请输入旧密码"  >
+				</div>
+				<div class="item">
+					<input type="password" name="new_password" placeholder="请输入新密码"  > 
+				</div>
+				<div class="item">
+					<input type="password" name="confirm_password" placeholder="新密码确认"  > 
+				</div>
+		
+			</div>
+			<div style="margin-top: 10px;margin-left: 10px;">
+				<button onclick="M.modify()">保存</button>
+			</div>
+			
+		</div>
+			
+	</body>
+	<script>
+		MENU.select('修改密码');
+		var M={};
+		
+		var username='${rows.username}' ;
+		M.modify=function()
+		{
+			var from=new AfForm("#content .tool");
+			var rows=from.get();//自动获取所有值
+			if(username==rows.username&&rows.new_password==rows.confirm_password)
+			{
+				var req={};
+				req.username=rows.username;
+				req.new_password=rows.new_password;
+				req.old_password=rows.old_password;
+				Af.rest("PasswordModify.api",req,function(data){
+					alert("修改成功请重新登录");
+					location.href="/test/admin/login.html";
+				});
+			}
+			else{
+				alert("用户名或密码输入不一致,请重新输入");
+				$('input').val('');//清空用户输入
+			}
+			
+		}
+		
+	</script>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- 示例
+	<service name="Hello" class="my.HelloApi" /> 
+	<upload name="BasicFile" class="my.my.BasicFileUpload" /> 
+	-->
+	<!-- 课程API -->
+	<service name="CourseList" class="test.admin.course.CourseListApi" /> 
+	<service name="CourseAdd" class="test.admin.course.CourseAddApi" /> 
+	<service name="CourseRemove" class="test.admin.course.CourseRemoveApi" /> 
+	<service name="CourseGet" class="test.admin.course.CourseGetApi" /> 
+	<service name="CourseUpdate" class="test.admin.course.CourseUpdateApi" />
+	<!-- 章节API -->
+	<service name="ChapterSave" class="test.admin.chapter.ChapterSaveApi" />
+	<service name="ChapterRemove" class="test.admin.chapter.ChapterRemoveApi" />
+	<service name="ChapterGet" class="test.admin.chapter.ChapterGetApi" />
+	<service name="ChapterUpdate" class="test.admin.chapter.ChapterUpdateApi" />
+	<!-- 习题API -->
+	<service name="ExampleSave" class="test.admin.example.ExampleSaveApi" />
+	<service name="ExampleUpdate" class="test.admin.example.ExampleUpdateApi" />
+	<service name="ExampleList" class="test.admin.example.ExampleListApi" />
+	<service name="ExampleLoad" class="test.admin.example.ExampleLoadApi" />
+	<service name="ExampleRemove" class="test.admin.example.ExampleRemoveApi" />
+	<!-- 管理员登录API -->
+	<service name="AdminLogin" class="test.admin.login.AdminLoginApi" />
+	<service name="AdminLoginOut" class="test.admin.login.AdminLoginOutApi" /> 
+	<!-- 密码修改 --> 
+	<service name="PasswordModify" class="test.admin.profile.PasswordModifyApi" /> 
+	<!-- 伪静态JS  -->
+	<jsx name="user" class="test.admin.login.UserJsx" />  
+</config>

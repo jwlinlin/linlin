@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 首页 </title>
+		<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+		<script type="text/javascript" src="jquery/afquery.js" ></script>
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		<link rel="stylesheet" href="jquery/afquery.css" />
+		<style>
+			body{
+				margin: 0px;
+				background-color: #F7F8FA;
+			}
+			
+			
+			
+			/* 中间内容区 */
+			#content{
+				margin:80px 10px auto 200px;
+				min-height: 700px;
+				background-color: #fff
+			}
+		</style>
+	</head>
+	<body>
+
+		<#include '/index_top.html' />
+		<#include '/index_left.html' />
+		
+		<!-- 中间 -->
+		<div id='content'>
+			
+		</div>
+	</body>
+	<script>
+		MENU.select("首页");
+	</script>
+</html>

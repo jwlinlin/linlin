@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 首页 </title>
+		<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+		<script type="text/javascript" src="jquery/afquery.js" ></script>
+		<link rel="stylesheet" href="jquery/afquery.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		
+		<style>
+			/* 工具栏 */
+			#content .toolbar{
+				border-bottom: 1px solid #eee;
+				padding: 8px ;
+			}
+			
+			/* 条目 (课程) */
+			#content .item{
+				display: inline-block;
+				
+				width: 220px;
+				height: 40px;
+				padding: 10px;
+				line-height: 40px;
+				border: 0px solid #bbb;
+				background-color: #309FE6;
+				border-radius: 10px;
+				margin: 10px;
+				text-align: left;				
+			}
+			/* 课程名 */
+			#content .item .name{
+				margin: auto;
+				font: 16px "微软雅黑";
+				color: #f1f1f1;
+				vertical-align: middle;
+			}
+			
+			/* 课程的相关操作 */
+			#content .item .buttons{
+				float:right;
+				vertical-align: middle;
+				
+				
+			}
+			
+
+		</style>
+	</head>
+	<body>
+
+		<#include '/index_top.html' />
+		<#include '/index_left.html' />
+		<#include 'course_edit_dialog.html'/> 
+		<#include '/confirm_dialog.html'/> 
+		
+		<!-- 中间 -->
+		<div id='content'>
+			<!-- 工具按钮 -->
+			<div class='toolbar'>
+				<button onclick="M.add()"> 添加 </button>
+			</div>	
+			
+			<!-- 内容显示 -->
+			
+			<div >
+			<#list course_list as row>	
+				<div class='item'>
+					<img src='images/course.png' style='vertical-align: middle;'>
+					<label class='name'>
+					<a href="chapter.do?id=${row.id}">${row.title}</a>
+						
+					</label>
+					<div class='buttons' iid="${row.id}" >
+						<img title="编辑" src='images/edit.png' onclick="M.edit(this)"> 
+						<img title="删除" src='images/delete.png' onclick="M.remove(this)">
+					</div>
+				</div>
+				</#list>
+			</div>
+		</div>
+		
+		
+	</body>
+	
+	<script>
+		MENU.select('课程管理');
+		var M={};
+		//添加课程
+		M.add=function()
+		{
+			//显示对话框
+			var dlg=new AfDialog("#course_edit_dialog");
+			dlg.set({title:''});
+			dlg.show();
+			//添加事件处理器
+			dlg.handleEvent('[role=ok]','click',function(){
+				//关闭对话框
+				dlg.hide();
+				var req=dlg.get();//取得用户输入
+				//提交到后台
+				Af.rest("CourseAdd.api",req,function(date){
+					//保存成功后的处理
+					location.reload();
+				});
+			});
+		}
+		//删除课程
+		M.remove=function(e)
+		{
+			var id=$(e).parent().attr("iid");
+			confirm_dialog("确定删除么?",function()
+				{
+					var req={};
+					req.id=id;
+					Af.rest("CourseRemove.api",req,function(){
+						$(e).parent().parent().remove();//删除HTML元素
+					});
+				}
+			);
+		}
+		//编辑课程
+		M.edit=function(e)
+		{
+			var id=$(e).parent().attr("iid");
+			var req={"id":id};//最新id
+			Af.rest("CourseGet.api",req,function(data){
+				M.edit2(data);
+			});
+		}
+		M.edit2=function(row){
+			var dlg=new AfDialog("#course_edit_dialog");
+			dlg.set(row);
+			dlg.show();
+			//添加事件处理器
+			dlg.handleEvent("[role=ok]",'click',function(){
+				//关闭对话框
+				dlg.hide();
+				//取得用户输入
+				var req=dlg.get();
+				req.id=row.id;
+				//把编辑后的数据存储到数据库
+				Af.rest("CourseUpdate.api",req,function(){
+					location.reload();
+				});
+			});
+			
+		}
+		
+		
+	</script>
+</html>

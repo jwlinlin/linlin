@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 习题管理 </title>
+		<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+		<script type="text/javascript" src="jquery/afquery.js" ></script>
+		<link rel="stylesheet" href="jquery/afquery.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		
+		<style>
+			/* 工具栏 */
+			#content .toolbar{
+				padding: 8px ;
+			}			
+			#content .form-line{
+				padding: 6px;
+			}
+			#content .form-line .label{
+				padding: 6px;
+				color: #444;
+			}
+			#content .form-line select{
+				padding: 6px;
+				min-width: 160px;
+			}		
+			#content .form-line textarea{
+				padding: 6px;
+				width: 500px;
+				min-height: 120px;
+			}		
+		</style>
+		
+		<script>
+			var course = ${course.id};
+			
+		</script>
+	</head>
+	<body>
+
+		<#include '/index_top.html' />
+		<#include '/index_left.html' />
+		
+		<!-- 中间 -->
+		<div id='content'>		
+			
+			<!-- 工具按钮 -->
+			<div class='toolbar'>
+				<button onclick='M.save()'> 保存 </button>
+				<button onclick="M.goback()">返回</button>
+			</div>	
+			
+			<!-- 内容显示 -->
+			<div class='edit' style='padding: 8px'>
+				<div class='form-line'>
+					<label class='label'> 课程 </label>
+					<label name='courseTitle'> ${course.title} </label>
+				</div>
+				<div class='form-line'>
+					<label class='label'> 章节 </label>
+					<select name='chapter'>
+						<#list chapter_list as r>
+							<option value='${r.number}'> ${r.number} : ${r.title}</option>
+						</#list>
+					</select>
+				</div>
+				<div class='form-line'>
+					<label class='label'> 难度 </label>
+					<select name='rank'> 
+						<option value='1'> 1星 ★  </option>
+						<option value='2'> 2星 ★★  </option>
+						<option value='3'> 3星 ★★★  </option>
+						<option value='4'> 4星 ★★★★  </option>
+						<option value='5'> 5星 ★★★★★  </option>
+					</select>
+				</div>
+				<div class='form-line'>
+					<label class='label' style='vertical-align: top;'> 题目 </label> 
+					<textarea name='content'></textarea>
+				</div>
+				<div class='form-line'>
+					<label class='label' style='vertical-align: top;'> 答案 </label> 
+					<textarea name='answer' ></textarea>
+				</div>
+			</div>
+		</div>
+		
+		<#include 'line_input_dialog.html'/> 
+		<#include 'confirm_dialog.html'/> 
+	</body>
+	
+	<script>
+		MENU.select('题库管理');
+		var M = {};
+		//返回
+		M.goback=function(){
+			location.href="example.do?";
+		}
+		
+		M.save=function(){
+			var rows=new AfForm("#content .edit");
+			var req=rows.get();//自动取得所有值
+			req.course=course;//课程ID
+			req.example_id=M.example_id;//新建的时候example_id为Null
+			if(req.example_id==null)
+			{
+				Af.rest("ExampleSave.api",req,function(data){
+				location.href="example.do?course="+course;
+			});
+			}
+			else{
+				Af.rest("ExampleUpdate.api",req,function(data){
+					location.href="example.do?course="+course;
+				});
+			}
+			alert("保存成功");
+			
+		}
+		//初始化
+		M.init=function()
+		{
+			M.example_id=Af.getQueryParam("example_id");
+			if(M.example_id!=null)
+			{
+				var req={};
+				req.example_id=M.example_id;
+				Af.rest("ExampleLoad.api",req,function(data){
+					var f=new AfForm("#content .edit");
+					f.set(data);
+				});
+			}
+		}
+		M.init();
+		
+		
+	</script>
+</html>

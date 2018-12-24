@@ -1,0 +1,27 @@
+<!--
+	作者：1597939091@qq.com
+	时间：2018-11-28
+	描述：confirm_dialog.html//删除确认对话框
+-->
+	<div id="confirm_dialog" class="af-dialog">
+		<div class="af-dialog-frame" style="width: 300x;height: 100px;padding: 20px;margin-bottom: 10px;">
+			<div name="ask" style="text-align:left;margin: 10px 0px;">确定删除么?</div>
+			
+			<div style="text-align: center;padding: 20px px;">
+				<button role="ok">确定</button>
+				<button role="close">取消</button>
+			</div>
+		</div>
+	</div>
+	<script>
+		function confirm_dialog(prompt,okHandler)
+		{
+			var dlg=new AfDialog("#confirm_dialog");
+			dlg.set({"ask":prompt});
+			dlg.show();
+			dlg.handleEvent("[role=ok]",'click',function(){
+				dlg.hide();
+				okHandler();
+			});
+		}
+	</script>

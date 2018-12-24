@@ -1,0 +1,36 @@
+
+	<!-- *** index_top.html *** -->
+	<style>
+	
+	</style>
+	<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+	<script type="text/javascript" src="user.jsx"></script>
+	<script type="text/javascript" src="jquery/afquery.js" ></script>
+	
+	<div id='top'>
+		<div class='logo'> 在线题库管理界面 </div>		
+		<div class='account'>
+			用户:<label class="user"></label>
+			<button  onclick="out()">退出</button>
+			
+		</div>
+		
+	</div>
+	<script>
+		
+		
+		//显示课用户
+		$('.user').html(user.username);
+		//退出登录
+		var M={};
+		function out()
+		{
+			var req={};
+			Af.rest("AdminLoginOut.api",req,function(data){
+				location.href="login.html";
+			});
+		}
+		
+	</script>
+	
+	

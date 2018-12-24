@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 章节管理 </title>
+		<script type="text/javascript" src="jquery/jquery.min.js" ></script>
+		<script type="text/javascript" src="jquery/afquery.js" ></script>
+		<link rel="stylesheet" href="jquery/afquery.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		
+		<style>
+			/* 工具栏 */
+			#content .toolbar{
+				padding: 8px ;
+			}			
+			#content .toolbar button:hover{
+				
+			}
+			
+			/* 课程信息 */
+			#content .info{
+				padding: 10px;
+				font-size: 20px;
+			}
+			/* 表格 */
+			.chapter_list{
+				
+			}
+			.chapter_list th { padding: 8px; background-color: #f1f1f1; color:#444;}
+			.chapter_list td { padding: 6px;}
+			.chapter_list tbody tr:hover{ background-color: #fde9c4;color:#444}
+			.chapter_list .c1 { width: 50px ;}
+			.chapter_list .c2 { width: 350px ;}
+			.chapter_list .c3 { width: 200px ;}
+		</style>
+		<script>
+				var course = ${courseJ};
+				var chapters=${chapterJ};
+		</script>
+	</head>
+	<body>
+
+		<#include '/index_top.html' />
+		<#include '/index_left.html' />
+		
+		<!-- 中间 -->
+		<div id='content'>
+			<!-- 课程信息 -->
+			<div class='info'>
+				当前课程名称 :${course.title}
+			</div>
+			
+			<!-- 工具按钮 -->
+			<div class='toolbar'>
+				<button onclick="M.add()"> 添加 </button>
+				<button onclick="M.save()">保存</button>
+				<button onclick="goback()">返回</button>
+			</div>	
+			
+			<!-- 内容显示 -->
+			
+			<div style='padding: 8px'>
+				<table class='chapter_list'>
+					<thead>
+						<tr>
+							<th class='c1'> # </th>
+							<th class='c2'> 章名称 </th>
+							<th class='c3'> 操作    </th>
+						</tr>
+						<!--mvc显示方式,暂时无法完成添加操作-->
+						
+					</thead>
+					
+					<tbody>
+						
+					</tbody>
+					
+					<tfoot style="display: none;"> 
+					
+						<!--每一行的模块-->
+						
+						<tr>
+						
+							<td class="number">{#nnn}</td>
+							
+							<td>{#title}</td>
+							<td iid='{#nnn}'>
+								<a href="javascript:void(0)" onclick="M.edit_chapter(this)">编辑</a>
+								<a href="javascript:void(0)" onclick="M.remove()">删除</a>
+							</td>
+						</tr>
+					</tfoot>
+				
+				</table>
+			</div>
+			
+		</div>
+		
+		<#include 'course_edit_dialog.html'/> 
+		<#include 'confirm_dialog.html'/> 
+		<#include 'line_input_dialog.html'/>
+		<#include 'chapter_edit_input_dialog.html'/>
+	</body>
+	
+	<script>
+		MENU.select('课程管理');
+		//返回
+		function goback(){
+			location.href="course.do?";
+		}
+		var M = {};
+		M.chapter_list=[];//存储String
+		M.add=function()
+		{
+			var dlg=new AfDialog("#line_input-dialog");
+			dlg.set({prompt:"请输入章节名称",value:""});
+			dlg.show();
+			//添加时间处理器
+			dlg.handleEvent("[role=ok]",'click',function(){
+				//关闭对话框,取得事件输入
+				dlg.hide();
+				var result=dlg.get();
+				M.chapter_list.push(result.value);
+				M.refresh();
+				alert("添加成功请保存");
+				
+			});
+			dlg.handleEvent("[role=close]","click",function(){
+				dlg.hide();	
+				alert("已取消");
+			})
+			}
+		//章节编辑
+		M.edit_chapter=function(e)
+		{
+			
+			var chapter_id=$(e).parent().attr('iid');
+			var course_id=course.id;
+			var req={};
+			req.chapter_id=chapter_id;
+			req.course_id=course_id;
+			Af.rest("ChapterGet.api",req,function(data){
+				M.edit_chapter1(data);
+				
+			});
+		}
+		M.edit_chapter1=function(data){
+			//弹出对话框并保存
+			var dlg=new AfDialog("#chapter_edit_input_dialog");
+			
+			dlg.set(data);
+			dlg.show();
+			//添加时间处理器
+			dlg.handleEvent("[role=ok]",'click',function(){
+				//关闭对话框
+				dlg.hide();
+				//取得用户输入
+				var req=dlg.get();
+				req.id=data.id;
+				//数据库更新
+				Af.rest("ChapterUpdate.api",req,function(data){
+					
+					alert("修改成功");
+					location.reload();
+				});
+			});
+		}
+		
+		
+		M.remove=function()
+		{
+			var nnn=$('.chapter_list .number').val();
+			var req={};
+			req.chapter_id=nnn;//章序号
+//			Af.rest("ChapterRemove.api",req,function(data){
+//				alert("删除成功");
+//				location.reload();
+//			});
+			M.chapter_list.splice(nnn-1,1);//从chapter_list中删除
+			M.refresh();
+		}
+		//把chapter_list数组转换为HTML文本
+		M.refresh=function()
+		{
+			
+			var target=$('.chapter_list tbody');
+			target.html("");//清空一下tbody里面的内容
+			var tp=new AfTemplate($(".chapter_list tfoot").html());
+			//遍历把数组里面的内容取出来
+			for(var i=0;i<M.chapter_list.length;i++)
+			{
+				var it=M.chapter_list[i];
+			 	var row={};
+				row.title=it;
+				row.nnn=i+1;//章节列表
+				var str=tp.replace(row);
+				target.append(str);//添加一行
+				
+			}
+		}
+		//把chapter_list的数据传到后台
+		M.save=function()
+		{
+			var req={};
+			req.course=course.id;
+			req.chapter_list=M.chapter_list;
+			Af.rest("ChapterSave.api",req,function(data){
+				alert("确定保存么?");
+				location.reload();
+			});
+		}
+//		M.init=function()
+//		{
+//			var target=$('.chapter_list tbody');
+//			target.html("");//清空一下tbody里面的内容
+//			var tp=new AfTemplate($(".chapter_list tfoot").html());
+//			for(var n of chapters)
+//			{
+//				
+//			 	var row={};
+//				row.title=n.title;
+//				row.number=n.number;//章节列表
+//				var str=tp.replace(row);
+//				target.append(str);//添加一行
+//				
+//			}
+//		}
+		for(var c of chapters)M.chapter_list.push(c.title);
+		M.refresh();
+	</script>
+</html>
